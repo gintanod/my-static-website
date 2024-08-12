@@ -113,16 +113,17 @@
         </div>
     </div>
 
-    <script>
-        // Define your knowledge base
-        const knowledgeBase = {
-            "What is the capital of France?": "The capital of France is Paris.",
-            "How many continents are there?": "There are seven continents on Earth.",
-            "Who wrote 'To Kill a Mockingbird'?": "'To Kill a Mockingbird' was written by Harper Lee."
-        };
+    <!-- Include Fuse.js for fuzzy matching -->
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.0/dist/fuse.min.js"></script>
 
-        // Initialize the chatbot
-        function initChatbot() {
+    <script>
+        // Fetch the knowledge base from an external JSON file
+        async function fetchKnowledgeBase() {
+            const response = await fetch('knowledgeBase.json');
+            return response.json();
+        }
+
+        function initChatbot(knowledgeBase) {
             const chatbotBody = document.getElementById('chatbotBody');
             const chatInput = document.getElementById('chatInput');
             const sendButton = document.getElementById('sendButton');
@@ -135,11 +136,20 @@
                 chatbotBody.scrollTop = chatbotBody.scrollHeight;
             }
 
+            // Set up fuzzy matching
+            const options = {
+                includeScore: true,
+                threshold: 0.4, // Adjust this value to control sensitivity
+                keys: ['question']
+            };
+            const fuse = new Fuse(
+                Object.entries(knowledgeBase).map(([question, answer]) => ({ question, answer })),
+                options
+            );
+
             function getChatbotResponse(userInput) {
-                // Normalize input and find the best match
-                const cleanedInput = userInput.trim().toLowerCase();
-                const response = Object.keys(knowledgeBase).find(q => q.toLowerCase() === cleanedInput);
-                return response ? knowledgeBase[response] : "Sorry, I don't have an answer to that question.";
+                const result = fuse.search(userInput.trim());
+                return result.length > 0 ? result[0].item.answer : "Sorry, I don't have an answer to that question.";
             }
 
             sendButton.addEventListener('click', function() {
@@ -163,8 +173,10 @@
             addMessage("Hello! How can I assist you today?", 'bot-message');
         }
 
-        // Initialize chatbot
-        initChatbot();
+        // Fetch knowledge base and initialize chatbot
+        fetchKnowledgeBase().then(knowledgeBase => {
+            initChatbot(knowledgeBase);
+        });
     </script>
 </body>
 </html>
