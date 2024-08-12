@@ -76,6 +76,16 @@
         .chatbot-footer button:hover {
             background-color: #1c86ee;
         }
+        .message {
+            margin-bottom: 10px;
+        }
+        .user-message {
+            text-align: right;
+            font-weight: bold;
+        }
+        .bot-message {
+            text-align: left;
+        }
     </style>
 </head>
 <body>
@@ -104,15 +114,15 @@
     </div>
 
     <script>
-        // Function to initialize the chatbot
-        function initChatbot() {
-            const knowledgeBase = {
-                "greeting": "Hello! How can I assist you today?",
-                "hours": "We are open from 9 AM to 5 PM, Monday to Friday.",
-                "location": "We are located at 123 Main Street, Hometown.",
-                "default": "I'm sorry, I don't understand that question. Can you please ask something else?"
-            };
+        // Define your knowledge base
+        const knowledgeBase = {
+            "What is the capital of France?": "The capital of France is Paris.",
+            "How many continents are there?": "There are seven continents on Earth.",
+            "Who wrote 'To Kill a Mockingbird'?": "'To Kill a Mockingbird' was written by Harper Lee."
+        };
 
+        // Initialize the chatbot
+        function initChatbot() {
             const chatbotBody = document.getElementById('chatbotBody');
             const chatInput = document.getElementById('chatInput');
             const sendButton = document.getElementById('sendButton');
@@ -120,9 +130,16 @@
             function addMessage(content, from) {
                 const messageDiv = document.createElement('div');
                 messageDiv.textContent = content;
-                messageDiv.className = from;
+                messageDiv.className = `message ${from}`;
                 chatbotBody.appendChild(messageDiv);
                 chatbotBody.scrollTop = chatbotBody.scrollHeight;
+            }
+
+            function getChatbotResponse(userInput) {
+                // Normalize input and find the best match
+                const cleanedInput = userInput.trim().toLowerCase();
+                const response = Object.keys(knowledgeBase).find(q => q.toLowerCase() === cleanedInput);
+                return response ? knowledgeBase[response] : "Sorry, I don't have an answer to that question.";
             }
 
             sendButton.addEventListener('click', function() {
@@ -131,7 +148,7 @@
                     addMessage(userInput, 'user-message');
                     chatInput.value = '';
 
-                    const response = knowledgeBase[userInput.toLowerCase()] || knowledgeBase['default'];
+                    const response = getChatbotResponse(userInput);
                     setTimeout(() => addMessage(response, 'bot-message'), 500);
                 }
             });
@@ -143,7 +160,7 @@
             });
 
             // Initialize with a greeting message
-            addMessage(knowledgeBase['greeting'], 'bot-message');
+            addMessage("Hello! How can I assist you today?", 'bot-message');
         }
 
         // Initialize chatbot
