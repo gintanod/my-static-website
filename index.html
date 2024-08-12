@@ -9,12 +9,12 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
+            background-color: #000000; /* Black background */
+            color: #ffffff; /* White text */
         }
         header {
-            background-color: #007BFF;
-            color: white;
+            background-color: #1a1a1a; /* Slightly lighter black for contrast */
+            color: #ffffff; /* White text */
             padding: 1em;
             text-align: center;
         }
@@ -22,8 +22,8 @@
             padding: 1em;
         }
         footer {
-            background-color: #007BFF;
-            color: white;
+            background-color: #1a1a1a; /* Slightly lighter black for contrast */
+            color: #ffffff; /* White text */
             text-align: center;
             padding: 0.5em;
             position: fixed;
@@ -31,11 +31,22 @@
             bottom: 0;
         }
         a {
-            color: #007BFF;
+            color: #1e90ff; /* A blue color for links to stand out against black */
             text-decoration: none;
         }
         a:hover {
             text-decoration: underline;
+        }
+        button {
+            background-color: #333333; /* Dark gray for button background */
+            color: #ffffff; /* White text */
+            border: none;
+            padding: 0.5em 1em;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #555555; /* Slightly lighter gray on hover */
         }
     </style>
 </head>
@@ -46,7 +57,7 @@
     
     <main>
         <h2>Hello, World!</h2>
-        <p>This is a simple static website hosted on GitHub Pages.</p>
+        <p>This is a simple static website hosted on GitHub Pages with a dark theme.</p>
         <p>Feel free to modify this template to suit your needs.</p>
         <button id="clickMeButton">Click Me!</button>
     </main>
