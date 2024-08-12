@@ -1,0 +1,6 @@
+{
+    "greeting": "Hello! How can I assist you today?",
+    "hours": "We are open from 9 AM to 5 PM, Monday to Friday.",
+    "location": "We are located at 123 Main Street, Hometown.",
+    "default": "I'm sorry, I don't understand that question. Can you please ask something else?"
+}
