@@ -24,18 +24,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function findAnswer(question) {
         const normalizedQuestion = normalizeText(question);
 
-        // Try to match with knowledge base entries
-        let bestMatch = { score: 0, answer: "Sorry, I don't have an answer to that question." };
+        // Handle common question patterns
+        if (/who is/i.test(normalizedQuestion)) {
+            const namePart = extractNamePart(normalizedQuestion);
+            const bestMatch = findBestMatch(namePart);
+            return bestMatch ? bestMatch.answer : "Sorry, I don't have an answer to that question.";
+        }
 
-        knowledgeBase.forEach(entry => {
-            const normalizedEntryQuestion = normalizeText(entry.question);
-            const score = calculateMatchScore(normalizedQuestion, normalizedEntryQuestion);
-            if (score > bestMatch.score) {
-                bestMatch = { score, answer: entry.answer };
-            }
-        });
-
-        return bestMatch.answer;
+        return "Sorry, I don't have an answer to that question.";
     }
 
     function normalizeText(text) {
@@ -46,18 +42,20 @@ document.addEventListener('DOMContentLoaded', () => {
             .filter(token => token.length > 0); // Remove empty tokens
     }
 
-    function calculateMatchScore(userQuestion, entryQuestion) {
-        const userTokens = userQuestion;
-        const entryTokens = entryQuestion;
+    function extractNamePart(question) {
+        const match = question.match(/who is\s+(.+)/i);
+        return match ? normalizeText(match[1]).join(' ') : '';
+    }
 
-        let matchCount = 0;
-        userTokens.forEach(token => {
-            if (entryTokens.includes(token)) {
-                matchCount++;
+    function findBestMatch(namePart) {
+        let bestMatch = null;
+        knowledgeBase.forEach(entry => {
+            const entryName = normalizeText(entry.question).join(' ');
+            if (entryName.includes(namePart)) {
+                bestMatch = entry;
             }
         });
-
-        return matchCount / entryTokens.length; // Score based on token matches
+        return bestMatch;
     }
 
     submit.addEventListener('click', () => {
