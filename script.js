@@ -23,25 +23,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function findAnswer(question) {
         const lowerCaseQuestion = question.toLowerCase();
-        let matchedAnswer = "Sorry, I don't have an answer to that question.";
+        let bestMatch = { score: 0, answer: "Sorry, I don't have an answer to that question." };
 
-        // Try exact matches first
         for (const entry of knowledgeBase) {
-            if (entry.question.toLowerCase() === lowerCaseQuestion) {
-                return entry.answer;
+            const lowerCaseQuestionEntry = entry.question.toLowerCase();
+            // Calculate a simple score based on keyword matching
+            const score = calculateMatchScore(lowerCaseQuestion, lowerCaseQuestionEntry);
+            if (score > bestMatch.score) {
+                bestMatch = { score, answer: entry.answer };
             }
         }
 
-        // Try partial matches if exact match is not found
-        for (const entry of knowledgeBase) {
-            if (entry.question.toLowerCase().includes(lowerCaseQuestion)) {
-                matchedAnswer = entry.answer;
-                break;
-            }
-        }
+        return bestMatch.answer;
+    }
 
-        // Fallback to a generic response if no match is found
-        return matchedAnswer;
+    function calculateMatchScore(userQuestion, knowledgeQuestion) {
+        const userWords = userQuestion.split(' ');
+        const knowledgeWords = knowledgeQuestion.split(' ');
+
+        let matchCount = 0;
+        userWords.forEach(word => {
+            if (knowledgeWords.includes(word)) {
+                matchCount++;
+            }
+        });
+
+        return matchCount / knowledgeWords.length; // Simple score based on keyword matches
     }
 
     submit.addEventListener('click', () => {
