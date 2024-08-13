@@ -7,11 +7,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load knowledge base
     fetch('knowledge_base.json')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             knowledgeBase = data;
         })
-        .catch(error => console.error('Error loading knowledge base:', error));
+        .catch(error => {
+            console.error('Error loading knowledge base:', error);
+            addMessage("Error loading knowledge base. Check console for details.", false);
+        });
 
     function addMessage(message, isUser) {
         const messageElement = document.createElement('div');
