@@ -25,30 +25,37 @@ document.addEventListener('DOMContentLoaded', () => {
         const lowerCaseQuestion = question.toLowerCase();
         let bestMatch = { score: 0, answer: "Sorry, I don't have an answer to that question." };
 
-        for (const entry of knowledgeBase) {
+        knowledgeBase.forEach(entry => {
             const lowerCaseQuestionEntry = entry.question.toLowerCase();
-            // Calculate a simple score based on keyword matching
             const score = calculateMatchScore(lowerCaseQuestion, lowerCaseQuestionEntry);
             if (score > bestMatch.score) {
                 bestMatch = { score, answer: entry.answer };
             }
-        }
+        });
 
         return bestMatch.answer;
     }
 
     function calculateMatchScore(userQuestion, knowledgeQuestion) {
-        const userWords = userQuestion.split(' ');
-        const knowledgeWords = knowledgeQuestion.split(' ');
+        const userTokens = tokenize(userQuestion);
+        const knowledgeTokens = tokenize(knowledgeQuestion);
 
         let matchCount = 0;
-        userWords.forEach(word => {
-            if (knowledgeWords.includes(word)) {
+        userTokens.forEach(token => {
+            if (knowledgeTokens.includes(token)) {
                 matchCount++;
             }
         });
 
-        return matchCount / knowledgeWords.length; // Simple score based on keyword matches
+        return matchCount / knowledgeTokens.length; // Score based on token matches
+    }
+
+    function tokenize(text) {
+        return text
+            .toLowerCase()
+            .replace(/[^\w\s]/g, '') // Remove punctuation
+            .split(/\s+/) // Split by whitespace
+            .filter(token => token.length > 0); // Remove empty tokens
     }
 
     submit.addEventListener('click', () => {
