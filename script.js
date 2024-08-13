@@ -22,62 +22,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function findAnswer(question) {
-        // Normalize the question
-        const normalizedQuestion = question.toLowerCase().trim();
-        
-        // Look for exact matches or common patterns
+        const normalizedQuestion = normalizeText(question);
+
+        // Try to match with knowledge base entries
         let bestMatch = { score: 0, answer: "Sorry, I don't have an answer to that question." };
-        const patternMatch = new RegExp(/who is|tell me about|what is/, 'i');
 
         knowledgeBase.forEach(entry => {
-            // Normalize the knowledge entry question
-            const entryQuestion = entry.question.toLowerCase().trim();
-            
-            // Check if the question contains key phrases
-            if (patternMatch.test(normalizedQuestion)) {
-                const keywords = extractKeywords(normalizedQuestion);
-                const score = calculatePatternScore(keywords, entryQuestion);
-                if (score > bestMatch.score) {
-                    bestMatch = { score, answer: entry.answer };
-                }
-            } else if (normalizedQuestion.includes(entryQuestion)) {
-                bestMatch = { score: 1, answer: entry.answer };
+            const normalizedEntryQuestion = normalizeText(entry.question);
+            const score = calculateMatchScore(normalizedQuestion, normalizedEntryQuestion);
+            if (score > bestMatch.score) {
+                bestMatch = { score, answer: entry.answer };
             }
         });
 
         return bestMatch.answer;
     }
 
-    function extractKeywords(question) {
-        // Extract keywords from the question, ignoring common words
-        const keywords = question
-            .replace(/who is|tell me about|what is/g, '') // Remove common patterns
-            .replace(/[^\w\s]/g, '') // Remove punctuation
-            .split(/\s+/) // Split by whitespace
-            .filter(token => token.length > 0); // Remove empty tokens
-        return keywords;
-    }
-
-    function calculatePatternScore(keywords, entryQuestion) {
-        // Calculate the score based on the number of matching keywords
-        const entryTokens = tokenize(entryQuestion);
-        let matchCount = 0;
-
-        keywords.forEach(keyword => {
-            if (entryTokens.includes(keyword)) {
-                matchCount++;
-            }
-        });
-
-        return matchCount / entryTokens.length; // Score based on keyword matches
-    }
-
-    function tokenize(text) {
+    function normalizeText(text) {
         return text
             .toLowerCase()
             .replace(/[^\w\s]/g, '') // Remove punctuation
             .split(/\s+/) // Split by whitespace
             .filter(token => token.length > 0); // Remove empty tokens
+    }
+
+    function calculateMatchScore(userQuestion, entryQuestion) {
+        const userTokens = userQuestion;
+        const entryTokens = entryQuestion;
+
+        let matchCount = 0;
+        userTokens.forEach(token => {
+            if (entryTokens.includes(token)) {
+                matchCount++;
+            }
+        });
+
+        return matchCount / entryTokens.length; // Score based on token matches
     }
 
     submit.addEventListener('click', () => {
