@@ -23,12 +23,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function findAnswer(question) {
         const lowerCaseQuestion = question.toLowerCase();
+        let matchedAnswer = "Sorry, I don't have an answer to that question.";
+
+        // Try exact matches first
         for (const entry of knowledgeBase) {
-            if (entry.question.toLowerCase().includes(lowerCaseQuestion)) {
+            if (entry.question.toLowerCase() === lowerCaseQuestion) {
                 return entry.answer;
             }
         }
-        return "Sorry, I don't have an answer to that question.";
+
+        // Try partial matches if exact match is not found
+        for (const entry of knowledgeBase) {
+            if (entry.question.toLowerCase().includes(lowerCaseQuestion)) {
+                matchedAnswer = entry.answer;
+                break;
+            }
+        }
+
+        // Fallback to a generic response if no match is found
+        return matchedAnswer;
     }
 
     submit.addEventListener('click', () => {
